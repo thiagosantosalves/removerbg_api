@@ -83,7 +83,7 @@ class RemoverBGController {
         //await page.waitForSelector(imgSelector);
         //await page.waitForNavigation()
 
-        await page.waitForTimeout(15000);
+        await page.waitForTimeout(28000);
 
         console.log('pagina já carregou');
 
