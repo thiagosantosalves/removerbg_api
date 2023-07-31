@@ -56,10 +56,7 @@ class RemoverBGController {
         const browser: any = await puppeteer.launch({ 
             headless: 'new',
             //headless: false,
-            args: [
-                'disable-infobars',
-                '--start-maximized'
-            ],
+            args: ['--no-sandbox', "--disabled-setupid-sandbox"]
         });
     
         const page = await browser.newPage();
