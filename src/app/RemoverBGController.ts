@@ -58,10 +58,10 @@ class RemoverBGController {
             headless: false,
            
             args: [
-                '--no-sandbox', 
-                "--disabled-setupid-sandbox",
-                '--window-size=1366,768',
-                '--disable-blink-features=AutomationControlled'
+                "--disable-setuid-sandbox",
+                "--no-sandbox",
+                "--single-process",
+                "--no-zygote",
             ]   
         });
     
