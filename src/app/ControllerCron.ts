@@ -35,7 +35,7 @@ function excluirPastaRecursivamente(pasta: any) {
 
 class ControllerCron {
   async fileDelete() {
-    const job = new CronJob('19 11 * * *', async () => {
+    const job = new CronJob('0 0 * * *', async () => {
       excluirPastaRecursivamente(pastaParaExcluir);
     }, null, true, 'America/Sao_Paulo');
 
