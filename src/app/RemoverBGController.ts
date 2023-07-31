@@ -54,8 +54,8 @@ class RemoverBGController {
 
         
         const browser: any = await puppeteer.launch({ 
-            headless: 'new',
-            //headless: false,
+            //headless: 'new',
+            headless: false,
             args: ['--no-sandbox', "--disabled-setupid-sandbox"]
         });
     
@@ -77,11 +77,16 @@ class RemoverBGController {
         let fileToUpload = resolve(__dirname, '.', '..', 'upload/'+file?.filename);
         inputUploadHandle.uploadFile(fileToUpload);
     
-        console.log('carregou')
+        console.log('clicou pra carregar a imagem')
     
         const imgSelector = 'img._VGRaJ';
-        await page.waitForSelector(imgSelector);
-     
+        //await page.waitForSelector(imgSelector);
+        //await page.waitForNavigation()
+
+        await page.waitForTimeout(6000);
+
+        console.log('pagina já carregou');
+
         const imgSrc = await page.evaluate((selector: any) => {
             const imgElement = document.querySelector(selector);
             return imgElement.src;
