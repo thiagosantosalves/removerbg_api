@@ -93,41 +93,54 @@ class RemoverBGController {
 
         console.log('pagina já carregou');
 
-        const imgSrc = await page.evaluate((selector: any) => {
-            const imgElement = document.querySelector(selector);
-            return imgElement.src;
-        }, imgSelector);
-    
-        const imgBuffer = Buffer.from(imgSrc.split(',')[1], 'base64');
+        try {
+            const imgSrc = await page.evaluate((selector: any) => {
+                const imgElement = document.querySelector(selector);
+                console.log('Imagem selecionada');
+                console.log(imgElement)
+
+                return imgElement?.src;
+            }, imgSelector);
+
+            console.log(imgSrc);
+
+
+            const imgBuffer = Buffer.from(imgSrc.split(',')[1], 'base64');
      
-        fs.writeFileSync(resolve(__dirname,'.', '..', `download/${file.filename}`), imgBuffer);
-    
-        await page.waitForTimeout(2000);
-    
-        browser.close();
+            fs.writeFileSync(resolve(__dirname,'.', '..', `download/${file.filename}`), imgBuffer);
+        
+            await page.waitForTimeout(2000);
+        
+            browser.close();
      
-        console.log('Imagem salva com sucesso na raiz do projeto:', file.filename);
+            console.log('Imagem salva com sucesso na raiz do projeto:', file.filename);
+            
+            let fileName: string[] = file.filename.split('.');
+            let imageName: string = fileName[0]+'.png';
         
-        let fileName: string[] = file.filename.split('.');
-        let imageName: string = fileName[0]+'.png';
-        
-        fs.unlink(fileToUpload, function (err) {
-            if(err) throw err;
-            console.log('File deleted!');
-        });
+            fs.unlink(fileToUpload, function (err) {
+                if(err) throw err;
+                console.log('File deleted!');
+            });
 
-        const oldFilePath: string = resolve(__dirname, '.', '..', `download/${file?.filename}`);
-        const newFilePath: string = resolve(__dirname, '.', '..', `download/${imageName}`);
+            const oldFilePath: string = resolve(__dirname, '.', '..', `download/${file?.filename}`);
+            const newFilePath: string = resolve(__dirname, '.', '..', `download/${imageName}`);
 
-        fs.renameSync(oldFilePath, newFilePath);
+            fs.renameSync(oldFilePath, newFilePath);
 
-        const res = {
-            status: 0,
-            error: null,
-            path: "http://159.223.147.170:8888/files/"+imageName
-        }
+            const res = {
+                status: 0,
+                error: null,
+                path: "http://159.223.147.170:8888/files/"+imageName
+            }
 
-        return response.status(200).json(res);
+            return response.status(200).json(res);
+
+
+        } catch (error) {
+            console.log(error);
+            browser.close();
+        }   
     }
 }
 
