@@ -2,7 +2,7 @@ import path from 'path';
 const fs = require('fs');
 
 const CronJob = require('cron').CronJob;
-const pastaParaExcluir = path.resolve(__dirname, '..', '..', 'download'); 
+const pastaParaExcluir = path.resolve(__dirname, '.', '..', 'download'); 
 
 function excluirPastaRecursivamente(pasta: any) {
   if (fs.existsSync(pasta)) {
@@ -18,7 +18,7 @@ function excluirPastaRecursivamente(pasta: any) {
 
     fs.rmdirSync(pasta);
 
-    fs.mkdir(path.resolve(__dirname, '..', '..', 'download'), (err: string) => {
+    fs.mkdir(path.resolve(__dirname, '.', '..', 'download'), (err: string) => {
       if (err) {
         console.log(err);
         return

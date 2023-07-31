@@ -16,10 +16,10 @@ app.use(cors);
 */
 
 app.use(router);
-app.use('/files', express.static(path.resolve(__dirname, '..', 'download')));
+app.use('/files', express.static(path.resolve(__dirname, '..', 'src/download')));
 
 app.use(router);
 
 ControllerCron.fileDelete();
 
-app.listen(process.env.PORT, () => console.log(`server is run`));
+app.listen(8888, () => console.log(`server is run port 8080`));

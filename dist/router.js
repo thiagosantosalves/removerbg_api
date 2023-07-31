@@ -43,7 +43,6 @@ var import_path = require("path");
 var RemoverBGController = class {
   async store(request, response) {
     const file = request.file;
-    let time = 3e3;
     if (file !== null && file !== void 0) {
       if (file.size > 9815779) {
         const res2 = {
@@ -51,7 +50,7 @@ var RemoverBGController = class {
           error: "The file object is larger than 10 mb.",
           path: null
         };
-        import_fs.default.unlink((0, import_path.resolve)(__dirname, ".", "..", "upload/" + file?.filename), function(err) {
+        import_fs.default.unlink((0, import_path.resolve)(__dirname, ".", "..", "upload/" + file.filename), function(err) {
           if (err)
             throw err;
           console.log("File deleted!");
@@ -65,7 +64,7 @@ var RemoverBGController = class {
           error: "O objeto file n\xE3o e uma imagem.",
           path: null
         };
-        import_fs.default.unlink((0, import_path.resolve)(__dirname, ".", "..", "upload/" + file?.filename), function(err) {
+        import_fs.default.unlink((0, import_path.resolve)(__dirname, ".", "..", "upload/" + file.filename), function(err) {
           if (err)
             throw err;
           console.log("File deleted!");
@@ -89,7 +88,7 @@ var RemoverBGController = class {
       ]
     });
     const page = await browser.newPage();
-    await page.goto("https://br.depositphotos.com/bgremover/upload.html", { waitUntil: "domcontentloaded" });
+    await page.goto(process.env.WEBSITE, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(1e3);
     await page.evaluate(() => {
       const buttons = Array.from(document.querySelectorAll("button"));
@@ -108,7 +107,7 @@ var RemoverBGController = class {
       return imgElement.src;
     }, imgSelector);
     const imgBuffer = Buffer.from(imgSrc.split(",")[1], "base64");
-    import_fs.default.writeFileSync((0, import_path.resolve)(__dirname, "..", "..", `download/${file.filename}`), imgBuffer);
+    import_fs.default.writeFileSync((0, import_path.resolve)(__dirname, ".", "..", `download/${file.filename}`), imgBuffer);
     await page.waitForTimeout(2e3);
     browser.close();
     console.log("Imagem salva com sucesso na raiz do projeto:", file.filename);
@@ -119,8 +118,8 @@ var RemoverBGController = class {
         throw err;
       console.log("File deleted!");
     });
-    const oldFilePath = (0, import_path.resolve)(__dirname, "..", "..", `download/${file?.filename}`);
-    const newFilePath = (0, import_path.resolve)(__dirname, "..", "..", `download/${imageName}`);
+    const oldFilePath = (0, import_path.resolve)(__dirname, ".", "..", `download/${file?.filename}`);
+    const newFilePath = (0, import_path.resolve)(__dirname, ".", "..", `download/${imageName}`);
     import_fs.default.renameSync(oldFilePath, newFilePath);
     const res = {
       status: 0,

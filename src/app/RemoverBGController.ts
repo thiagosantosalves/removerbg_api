@@ -64,7 +64,7 @@ class RemoverBGController {
     
         const page = await browser.newPage();
     
-        await page.goto(process.env.WEBSITE, { waitUntil: 'domcontentloaded' });
+        await page.goto('https://br.depositphotos.com/bgremover/upload.html', { waitUntil: 'domcontentloaded' });
     
         await page.waitForTimeout(1000);
     
@@ -92,7 +92,7 @@ class RemoverBGController {
     
         const imgBuffer = Buffer.from(imgSrc.split(',')[1], 'base64');
      
-        fs.writeFileSync(resolve(__dirname, '..', '..', `download/${file.filename}`), imgBuffer);
+        fs.writeFileSync(resolve(__dirname,'.', '..', `download/${file.filename}`), imgBuffer);
     
         await page.waitForTimeout(2000);
     
@@ -108,15 +108,15 @@ class RemoverBGController {
             console.log('File deleted!');
         });
 
-        const oldFilePath: string = resolve(__dirname, '..', '..', `download/${file?.filename}`);
-        const newFilePath: string = resolve(__dirname, '..', '..', `download/${imageName}`);
+        const oldFilePath: string = resolve(__dirname, '.', '..', `download/${file?.filename}`);
+        const newFilePath: string = resolve(__dirname, '.', '..', `download/${imageName}`);
 
         fs.renameSync(oldFilePath, newFilePath);
 
         const res = {
             status: 0,
             error: null,
-            path: "http://localhost:8888/files/"+imageName
+            path: "http://159.223.147.170:8888/files/"+imageName
         }
 
         return response.status(200).json(res);

@@ -36,7 +36,7 @@ module.exports = __toCommonJS(ControllerCron_exports);
 var import_path = __toESM(require("path"));
 var fs = require("fs");
 var CronJob = require("cron").CronJob;
-var pastaParaExcluir = import_path.default.resolve(__dirname, "..", "..", "download");
+var pastaParaExcluir = import_path.default.resolve(__dirname, ".", "..", "download");
 function excluirPastaRecursivamente(pasta) {
   if (fs.existsSync(pasta)) {
     fs.readdirSync(pasta).forEach((arquivo) => {
@@ -48,6 +48,13 @@ function excluirPastaRecursivamente(pasta) {
       }
     });
     fs.rmdirSync(pasta);
+    fs.mkdir(import_path.default.resolve(__dirname, ".", "..", "download"), (err) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      console.log("Diret\xF3rio criado! =)");
+    });
     console.log("Pasta exclu\xEDda com sucesso:", pasta);
   } else {
     console.log("A pasta n\xE3o existe:", pasta);
@@ -55,7 +62,7 @@ function excluirPastaRecursivamente(pasta) {
 }
 var ControllerCron = class {
   async fileDelete() {
-    const job = new CronJob("25 0 * * *", async () => {
+    const job = new CronJob("19 11 * * *", async () => {
       excluirPastaRecursivamente(pastaParaExcluir);
     }, null, true, "America/Sao_Paulo");
     job.start();
