@@ -54,13 +54,20 @@ class RemoverBGController {
 
         
         const browser: any = await puppeteer.launch({ 
-            headless: 'new',
-            //headless: false,
-            args: ['--no-sandbox', "--disabled-setupid-sandbox"]
+            //headless: 'new',
+            headless: false,
+           
+            args: [
+                '--no-sandbox', 
+                "--disabled-setupid-sandbox",
+                '--window-size=1366,768',
+                '--disable-blink-features=AutomationControlled'
+            ]   
         });
     
         const page = await browser.newPage();
-    
+        // Definir um userAgent personalizado
+        //await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36');
         await page.goto('https://br.depositphotos.com/bgremover/upload.html', { waitUntil: 'domcontentloaded' });
     
         await page.waitForTimeout(1000);
@@ -83,7 +90,7 @@ class RemoverBGController {
         //await page.waitForSelector(imgSelector);
         //await page.waitForNavigation()
 
-        await page.waitForTimeout(28000);
+        await page.waitForTimeout(6000);
 
         console.log('pagina já carregou');
 
