@@ -52,7 +52,6 @@ class RemoverBGController {
             return response.status(400).json(res);
         }
 
-        
         const browser: any = await puppeteer.launch({ 
             headless: true,
             //headless: false,
@@ -80,16 +79,9 @@ class RemoverBGController {
         const inputUploadHandle: any = await page.$('input[type=file]');
         let fileToUpload = resolve(__dirname, '.', '..', 'upload/'+file?.filename);
         inputUploadHandle.uploadFile(fileToUpload);
-    
-        console.log('clicou pra carregar a imagem')
-    
+
         const imgSelector = 'img._VGRaJ';
-
         await page.waitForSelector(imgSelector);
-
-        //await page.waitForTimeout(6000);
-
-        console.log('pagina já carregou');
 
         const imgSrc = await page.evaluate((selector: any) => {
             const imgElement = document.querySelector(selector);
@@ -108,9 +100,7 @@ class RemoverBGController {
             await page.waitForTimeout(2000);
         
             browser.close();
-    
-            console.log('Imagem salva com sucesso na raiz do projeto:', file.filename);
-                
+
             let fileName: string[] = file.filename.split('.');
             let imageName: string = fileName[0]+'.png';
     
@@ -133,7 +123,7 @@ class RemoverBGController {
             return response.status(200).json(res);
         } else {
             const res = {
-                status: 2,
+                status: 3,
                 error: "Image não foi carregada.",
                 path: null
             }
