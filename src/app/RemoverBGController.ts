@@ -56,9 +56,6 @@ class RemoverBGController {
         const browser: any = await puppeteer.launch({ 
             headless: 'new',
             //headless: false,
-            executablePath: process.env.NODE_ENV === "production" 
-            ? process.env.PUPPETEER_EXECUTABLE_PATH
-            : puppeteer.executablePath(),
             args: [
                 "--disable-setuid-sandbox",
                 "--no-sandbox",
