@@ -85,7 +85,9 @@ class RemoverBGController {
     
         const imgSelector = 'img._VGRaJ';
 
-        await page.waitForTimeout(6000);
+        await page.waitForSelector(imgSelector);
+
+        //await page.waitForTimeout(6000);
 
         console.log('pagina já carregou');
 
