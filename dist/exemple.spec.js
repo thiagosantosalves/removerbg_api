@@ -64,9 +64,9 @@ var __privateWrapper = (obj, member, setter, getter) => ({
   }
 });
 
-// node_modules/pretty-format/node_modules/ansi-styles/index.js
+// node_modules/ansi-styles/index.js
 var require_ansi_styles = __commonJS({
-  "node_modules/pretty-format/node_modules/ansi-styles/index.js"(exports, module2) {
+  "node_modules/ansi-styles/index.js"(exports, module2) {
     "use strict";
     var ANSI_BACKGROUND_OFFSET = 10;
     var wrapAnsi256 = (offset = 0) => (code) => `\x1B[${38 + offset};5;${code}m`;

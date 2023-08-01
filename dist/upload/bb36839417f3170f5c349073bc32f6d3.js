@@ -1,0 +1,2 @@
+// src/upload/bb36839417f3170f5c349073bc32f6d3.jpg
+var bb36839417f3170f5c349073bc32f6d3_default = "../bb36839417f3170f5c349073bc32f6d3-LA6CTM3L.jpg";
