@@ -1,2 +1,0 @@
-// src/upload/ce4968a10b00f4566ce85111f38c762a.jpg
-var ce4968a10b00f4566ce85111f38c762a_default = "../ce4968a10b00f4566ce85111f38c762a-LA6CTM3L.jpg";
