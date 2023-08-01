@@ -1,2 +1,0 @@
-// src/download/34d37ee682e931085ed979d7525194fb.png
-var d37ee682e931085ed979d7525194fb_default = "../34d37ee682e931085ed979d7525194fb-HXEUZ7JD.png";
