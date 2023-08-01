@@ -209,7 +209,7 @@ require("dotenv").config();
 var app = (0, import_express2.default)();
 app.use(import_express2.default.json());
 app.use(router_default);
-app.use("/files", import_express2.default.static(import_path4.default.resolve(__dirname, "download")));
+app.use("/files", import_express2.default.static(import_path4.default.resolve(__dirname, "..", "download")));
 app.use(router_default);
 ControllerCron_default.fileDelete();
 app.listen(8888, () => console.log(`server is run port 8888`));
