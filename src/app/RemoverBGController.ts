@@ -54,7 +54,7 @@ class RemoverBGController {
 
         
         const browser: any = await puppeteer.launch({ 
-            headless: "new",
+            headless: true,
             //headless: false,
             args: [
                 "--disable-setuid-sandbox",
@@ -132,7 +132,7 @@ class RemoverBGController {
         } else {
             const res = {
                 status: 2,
-                error: "The file object is larger than 10 mb.",
+                error: "Image não foi carregada.",
                 path: null
             }
 
