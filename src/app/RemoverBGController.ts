@@ -54,7 +54,7 @@ class RemoverBGController {
 
         
         const browser: any = await puppeteer.launch({ 
-            headless: true,
+            headless: "new",
             //headless: false,
             args: [
                 "--disable-setuid-sandbox",
@@ -65,8 +65,6 @@ class RemoverBGController {
         });
     
         const page = await browser.newPage();
-        // Definir um userAgent personalizado
-        //await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.5790.138 Safari/537.36');
         await page.goto('https://br.depositphotos.com/bgremover/upload.html', { waitUntil: 'domcontentloaded' });
     
         await page.waitForTimeout(1000);
@@ -86,13 +84,11 @@ class RemoverBGController {
         console.log('clicou pra carregar a imagem')
     
         const imgSelector = 'img._VGRaJ';
-        //await page.waitForSelector(imgSelector);
-        //await page.waitForNavigation()
+
         await page.waitForTimeout(6000);
 
         console.log('pagina já carregou');
 
-       
         const imgSrc = await page.evaluate((selector: any) => {
             const imgElement = document.querySelector(selector);
             console.log('Imagem selecionada');
@@ -101,38 +97,52 @@ class RemoverBGController {
             return imgElement?.src;
         }, imgSelector);
 
-        console.log(imgSrc);
+        if(imgSrc) {
 
-        const imgBuffer = Buffer.from(imgSrc.split(',')[1], 'base64');
+            const imgBuffer = Buffer.from(imgSrc.split(',')[1], 'base64');
      
-        fs.writeFileSync(resolve(__dirname,'.', '..', `download/${file.filename}`), imgBuffer);
+            fs.writeFileSync(resolve(__dirname,'.', '..', `download/${file.filename}`), imgBuffer);
     
-        await page.waitForTimeout(2000);
+            await page.waitForTimeout(2000);
+        
+            browser.close();
     
-        browser.close();
+            console.log('Imagem salva com sucesso na raiz do projeto:', file.filename);
+                
+            let fileName: string[] = file.filename.split('.');
+            let imageName: string = fileName[0]+'.png';
     
-        console.log('Imagem salva com sucesso na raiz do projeto:', file.filename);
-            
-        let fileName: string[] = file.filename.split('.');
-        let imageName: string = fileName[0]+'.png';
-    
-        fs.unlink(fileToUpload, function (err) {
-            if(err) throw err;
-            console.log('File deleted!');
-        });
+            fs.unlink(fileToUpload, function (err) {
+                if(err) throw err;
+                console.log('File deleted!');
+            });
 
-        const oldFilePath: string = resolve(__dirname, '.', '..', `download/${file?.filename}`);
-        const newFilePath: string = resolve(__dirname, '.', '..', `download/${imageName}`);
+            const oldFilePath: string = resolve(__dirname, '.', '..', `download/${file?.filename}`);
+            const newFilePath: string = resolve(__dirname, '.', '..', `download/${imageName}`);
 
-        fs.renameSync(oldFilePath, newFilePath);
+            fs.renameSync(oldFilePath, newFilePath);
 
-        const res = {
-            status: 0,
-            error: null,
-            path: "http://159.223.147.170:8888/files/"+imageName
+            const res = {
+                status: 0,
+                error: null,
+                path: "http://159.223.147.170:8888/files/"+imageName
+            }
+
+            return response.status(200).json(res);
+        } else {
+            const res = {
+                status: 2,
+                error: "The file object is larger than 10 mb.",
+                path: null
+            }
+
+            fs.unlink(resolve(__dirname, '.', '..', 'upload/'+file.filename), function (err) {
+                if(err) throw err;
+                console.log('File deleted!');
+            });
+
+            return response.status(400).json(res);
         }
-
-        return response.status(200).json(res);
     }
 }
 
