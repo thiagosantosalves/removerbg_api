@@ -16,7 +16,7 @@ app.use(cors);
 */
 
 app.use(router);
-app.use('/files', express.static(path.resolve(__dirname, '..', 'src/download')));
+app.use('/files', express.static(path.resolve(__dirname, 'download')));
 
 app.use(router);
 
