@@ -54,8 +54,8 @@ class RemoverBGController {
 
         
         const browser: any = await puppeteer.launch({ 
-            //headless: 'new',
-            headless: false,
+            headless: true,
+            //headless: false,
             args: [
                 "--disable-setuid-sandbox",
                 "--no-sandbox",
