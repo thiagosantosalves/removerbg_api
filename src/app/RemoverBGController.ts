@@ -18,7 +18,7 @@ class RemoverBGController {
                     path: null
                 }
 
-                fs.unlink(resolve(__dirname, '.', '..', 'upload/'+file.filename), function (err) {
+                fs.unlink(resolve(__dirname, '..', 'upload/'+file.filename), function (err) {
                     if(err) throw err;
                     console.log('File deleted!');
                 });
@@ -35,7 +35,7 @@ class RemoverBGController {
                     path: null
                 }
 
-                fs.unlink(resolve(__dirname, '.', '..', 'upload/'+file.filename), function (err) {
+                fs.unlink(resolve(__dirname, '..', 'upload/'+file.filename), function (err) {
                     if(err) throw err;
                     console.log('File deleted!');
                 });
@@ -52,8 +52,10 @@ class RemoverBGController {
             return response.status(400).json(res);
         }
 
+        
         const browser: any = await puppeteer.launch({ 
-            headless: true,
+            //headless: true,
+            headless: "new",
             //headless: false,
             args: [
                 "--disable-setuid-sandbox",
@@ -77,11 +79,15 @@ class RemoverBGController {
         await page.waitForTimeout(2000);
     
         const inputUploadHandle: any = await page.$('input[type=file]');
-        let fileToUpload = resolve(__dirname, '.', '..', 'upload/'+file?.filename);
+        let fileToUpload = resolve(__dirname, '..', 'upload/'+file?.filename);
         inputUploadHandle.uploadFile(fileToUpload);
-
+    
+        console.log('clicou pra carregar a imagem')
+    
         const imgSelector = 'img._VGRaJ';
         await page.waitForSelector(imgSelector);
+
+        console.log('pagina já carregou');
 
         const imgSrc = await page.evaluate((selector: any) => {
             const imgElement = document.querySelector(selector);
@@ -95,12 +101,14 @@ class RemoverBGController {
 
             const imgBuffer = Buffer.from(imgSrc.split(',')[1], 'base64');
      
-            fs.writeFileSync(resolve(__dirname,'.', '..', `download/${file.filename}`), imgBuffer);
+            fs.writeFileSync(resolve(__dirname, '..', `download/${file.filename}`), imgBuffer);
     
             await page.waitForTimeout(2000);
         
             browser.close();
-
+    
+            console.log('Imagem salva com sucesso na raiz do projeto:', file.filename);
+                
             let fileName: string[] = file.filename.split('.');
             let imageName: string = fileName[0]+'.png';
     
@@ -123,7 +131,7 @@ class RemoverBGController {
             return response.status(200).json(res);
         } else {
             const res = {
-                status: 3,
+                status: 2,
                 error: "Image não foi carregada.",
                 path: null
             }

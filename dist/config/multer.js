@@ -38,7 +38,7 @@ var import_crypto = __toESM(require("crypto"));
 var import_path = require("path");
 var multer_default = {
   storage: import_multer.default.diskStorage({
-    destination: (0, import_path.resolve)(__dirname, "..", "..", "src", "upload"),
+    destination: (0, import_path.resolve)(__dirname, "..", "upload"),
     filename: (req, file, cb) => {
       import_crypto.default.randomBytes(16, (err, res) => {
         return cb(null, res.toString("hex") + (0, import_path.extname)(file.originalname));

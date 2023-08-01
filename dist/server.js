@@ -39,50 +39,53 @@ var RemoverBGController = class {
     const file = request.file;
     if (file !== null && file !== void 0) {
       if (file.size > 9815779) {
-        const res2 = {
+        const res = {
           status: 2,
           error: "The file object is larger than 10 mb.",
           path: null
         };
-        import_fs.default.unlink((0, import_path.resolve)(__dirname, ".", "..", "upload/" + file.filename), function(err) {
+        import_fs.default.unlink((0, import_path.resolve)(__dirname, "..", "upload/" + file.filename), function(err) {
           if (err)
             throw err;
           console.log("File deleted!");
         });
-        return response.status(400).json(res2);
+        return response.status(400).json(res);
       }
       let type = file.mimetype.split("/");
       if (type[0] != "image") {
-        const res2 = {
+        const res = {
           status: 1,
           error: "O objeto file n\xE3o e uma imagem.",
           path: null
         };
-        import_fs.default.unlink((0, import_path.resolve)(__dirname, ".", "..", "upload/" + file.filename), function(err) {
+        import_fs.default.unlink((0, import_path.resolve)(__dirname, "..", "upload/" + file.filename), function(err) {
           if (err)
             throw err;
           console.log("File deleted!");
         });
-        return response.status(400).json(res2);
+        return response.status(400).json(res);
       }
     } else {
-      const res2 = {
+      const res = {
         status: 1,
         error: "O objeto file \xE9 nulo ou indefinido.",
         path: null
       };
-      return response.status(400).json(res2);
+      return response.status(400).json(res);
     }
     const browser = await import_puppeteer.default.launch({
+      //headless: true,
       headless: "new",
       //headless: false,
       args: [
-        "disable-infobars",
-        "--start-maximized"
+        "--disable-setuid-sandbox",
+        "--no-sandbox",
+        "--single-process",
+        "--no-zygote"
       ]
     });
     const page = await browser.newPage();
-    await page.goto(process.env.WEBSITE, { waitUntil: "domcontentloaded" });
+    await page.goto("https://br.depositphotos.com/bgremover/upload.html", { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(1e3);
     await page.evaluate(() => {
       const buttons = Array.from(document.querySelectorAll("button"));
@@ -91,36 +94,53 @@ var RemoverBGController = class {
     });
     await page.waitForTimeout(2e3);
     const inputUploadHandle = await page.$("input[type=file]");
-    let fileToUpload = (0, import_path.resolve)(__dirname, ".", "..", "upload/" + file?.filename);
+    let fileToUpload = (0, import_path.resolve)(__dirname, "..", "upload/" + file?.filename);
     inputUploadHandle.uploadFile(fileToUpload);
-    console.log("carregou");
+    console.log("clicou pra carregar a imagem");
     const imgSelector = "img._VGRaJ";
     await page.waitForSelector(imgSelector);
+    console.log("pagina j\xE1 carregou");
     const imgSrc = await page.evaluate((selector) => {
       const imgElement = document.querySelector(selector);
-      return imgElement.src;
+      console.log("Imagem selecionada");
+      console.log(imgElement);
+      return imgElement?.src;
     }, imgSelector);
-    const imgBuffer = Buffer.from(imgSrc.split(",")[1], "base64");
-    import_fs.default.writeFileSync((0, import_path.resolve)(__dirname, ".", "..", `download/${file.filename}`), imgBuffer);
-    await page.waitForTimeout(2e3);
-    browser.close();
-    console.log("Imagem salva com sucesso na raiz do projeto:", file.filename);
-    let fileName = file.filename.split(".");
-    let imageName = fileName[0] + ".png";
-    import_fs.default.unlink(fileToUpload, function(err) {
-      if (err)
-        throw err;
-      console.log("File deleted!");
-    });
-    const oldFilePath = (0, import_path.resolve)(__dirname, ".", "..", `download/${file?.filename}`);
-    const newFilePath = (0, import_path.resolve)(__dirname, ".", "..", `download/${imageName}`);
-    import_fs.default.renameSync(oldFilePath, newFilePath);
-    const res = {
-      status: 0,
-      error: null,
-      path: "http://localhost:8888/files/" + imageName
-    };
-    return response.status(200).json(res);
+    if (imgSrc) {
+      const imgBuffer = Buffer.from(imgSrc.split(",")[1], "base64");
+      import_fs.default.writeFileSync((0, import_path.resolve)(__dirname, "..", `download/${file.filename}`), imgBuffer);
+      await page.waitForTimeout(2e3);
+      browser.close();
+      console.log("Imagem salva com sucesso na raiz do projeto:", file.filename);
+      let fileName = file.filename.split(".");
+      let imageName = fileName[0] + ".png";
+      import_fs.default.unlink(fileToUpload, function(err) {
+        if (err)
+          throw err;
+        console.log("File deleted!");
+      });
+      const oldFilePath = (0, import_path.resolve)(__dirname, ".", "..", `download/${file?.filename}`);
+      const newFilePath = (0, import_path.resolve)(__dirname, ".", "..", `download/${imageName}`);
+      import_fs.default.renameSync(oldFilePath, newFilePath);
+      const res = {
+        status: 0,
+        error: null,
+        path: "http://159.223.147.170:8888/files/" + imageName
+      };
+      return response.status(200).json(res);
+    } else {
+      const res = {
+        status: 2,
+        error: "Image n\xE3o foi carregada.",
+        path: null
+      };
+      import_fs.default.unlink((0, import_path.resolve)(__dirname, ".", "..", "upload/" + file.filename), function(err) {
+        if (err)
+          throw err;
+        console.log("File deleted!");
+      });
+      return response.status(400).json(res);
+    }
   }
 };
 var RemoverBGController_default = new RemoverBGController();
@@ -131,7 +151,7 @@ var import_crypto = __toESM(require("crypto"));
 var import_path2 = require("path");
 var multer_default = {
   storage: import_multer.default.diskStorage({
-    destination: (0, import_path2.resolve)(__dirname, "..", "..", "src", "upload"),
+    destination: (0, import_path2.resolve)(__dirname, "..", "upload"),
     filename: (req, file, cb) => {
       import_crypto.default.randomBytes(16, (err, res) => {
         return cb(null, res.toString("hex") + (0, import_path2.extname)(file.originalname));
@@ -176,7 +196,7 @@ function excluirPastaRecursivamente(pasta) {
 }
 var ControllerCron = class {
   async fileDelete() {
-    const job = new CronJob("19 11 * * *", async () => {
+    const job = new CronJob("0 0 * * *", async () => {
       excluirPastaRecursivamente(pastaParaExcluir);
     }, null, true, "America/Sao_Paulo");
     job.start();
@@ -192,4 +212,4 @@ app.use(router_default);
 app.use("/files", import_express2.default.static(import_path4.default.resolve(__dirname, "..", "src/download")));
 app.use(router_default);
 ControllerCron_default.fileDelete();
-app.listen(process.env.PORT, () => console.log(`server is run`));
+app.listen(8888, () => console.log(`server is run port 8888`));
