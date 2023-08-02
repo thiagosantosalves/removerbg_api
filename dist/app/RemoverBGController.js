@@ -76,8 +76,8 @@ var RemoverBGController = class {
       return response.status(400).json(res);
     }
     const browser = await import_puppeteer.default.launch({
-      //headless: true,
-      headless: "new",
+      headless: true,
+      //headless: "new",
       //headless: false,
       args: [
         "--disable-setuid-sandbox",
@@ -96,7 +96,7 @@ var RemoverBGController = class {
     });
     await page.waitForTimeout(2e3);
     const inputUploadHandle = await page.$("input[type=file]");
-    let fileToUpload = (0, import_path.resolve)(__dirname, "..", "upload/" + file?.filename);
+    let fileToUpload = (0, import_path.resolve)(__dirname, "..", "upload/" + file.filename);
     inputUploadHandle.uploadFile(fileToUpload);
     console.log("clicou pra carregar a imagem");
     const imgSelector = "img._VGRaJ";
@@ -121,7 +121,7 @@ var RemoverBGController = class {
           throw err;
         console.log("File deleted!");
       });
-      const oldFilePath = (0, import_path.resolve)(__dirname, ".", "..", `download/${file?.filename}`);
+      const oldFilePath = (0, import_path.resolve)(__dirname, ".", "..", `download/${file.filename}`);
       const newFilePath = (0, import_path.resolve)(__dirname, ".", "..", `download/${imageName}`);
       import_fs.default.renameSync(oldFilePath, newFilePath);
       const res = {

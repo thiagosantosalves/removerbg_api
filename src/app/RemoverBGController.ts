@@ -54,8 +54,8 @@ class RemoverBGController {
 
         
         const browser: any = await puppeteer.launch({ 
-            //headless: true,
-            headless: "new",
+            headless: true,
+            //headless: "new",
             //headless: false,
             args: [
                 "--disable-setuid-sandbox",
@@ -79,7 +79,7 @@ class RemoverBGController {
         await page.waitForTimeout(2000);
     
         const inputUploadHandle: any = await page.$('input[type=file]');
-        let fileToUpload = resolve(__dirname, '..', 'upload/'+file?.filename);
+        let fileToUpload = resolve(__dirname, '..', 'upload/'+file.filename);
         inputUploadHandle.uploadFile(fileToUpload);
     
         console.log('clicou pra carregar a imagem')
@@ -117,7 +117,7 @@ class RemoverBGController {
                 console.log('File deleted!');
             });
 
-            const oldFilePath: string = resolve(__dirname, '.', '..', `download/${file?.filename}`);
+            const oldFilePath: string = resolve(__dirname, '.', '..', `download/${file.filename}`);
             const newFilePath: string = resolve(__dirname, '.', '..', `download/${imageName}`);
 
             fs.renameSync(oldFilePath, newFilePath);
