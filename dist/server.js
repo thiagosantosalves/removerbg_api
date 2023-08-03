@@ -125,7 +125,7 @@ var RemoverBGController = class {
       const res = {
         status: 0,
         error: null,
-        path: "http://146.190.49.178:8888/files/" + imageName
+        path: "http://192.81.213.228:8888/files/" + imageName
       };
       return response.status(200).json(res);
     } else {
