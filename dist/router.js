@@ -45,7 +45,7 @@ var RemoverBGController = class {
     const file = request.file;
     if (file !== null && file !== void 0) {
       if (file.size > 9815779) {
-        const res = {
+        const res2 = {
           status: 2,
           error: "The file object is larger than 10 mb.",
           path: null
@@ -55,11 +55,11 @@ var RemoverBGController = class {
             throw err;
           console.log("File deleted!");
         });
-        return response.status(400).json(res);
+        return response.status(400).json(res2);
       }
       let type = file.mimetype.split("/");
       if (type[0] != "image") {
-        const res = {
+        const res2 = {
           status: 1,
           error: "O objeto file n\xE3o e uma imagem.",
           path: null
@@ -69,19 +69,18 @@ var RemoverBGController = class {
             throw err;
           console.log("File deleted!");
         });
-        return response.status(400).json(res);
+        return response.status(400).json(res2);
       }
     } else {
-      const res = {
+      const res2 = {
         status: 1,
         error: "O objeto file \xE9 nulo ou indefinido.",
         path: null
       };
-      return response.status(400).json(res);
+      return response.status(400).json(res2);
     }
     const browser = await import_puppeteer.default.launch({
       headless: true,
-      //headless: "new",
       //headless: false,
       args: [
         "--disable-setuid-sandbox",
@@ -107,40 +106,8 @@ var RemoverBGController = class {
     try {
       await page.waitForSelector(imgSelector);
     } catch (error) {
-      console.log("Error ao carregar a imagem");
-    }
-    console.log("pagina j\xE1 carregou");
-    const imgSrc = await page.evaluate((selector) => {
-      const imgElement = document.querySelector(selector);
-      console.log("Imagem selecionada");
-      console.log(imgElement);
-      return imgElement?.src;
-    }, imgSelector);
-    if (imgSrc) {
-      const imgBuffer = Buffer.from(imgSrc.split(",")[1], "base64");
-      import_fs.default.writeFileSync((0, import_path.resolve)(__dirname, "..", `download/${file.filename}`), imgBuffer);
-      await page.waitForTimeout(2e3);
-      browser.close();
-      console.log("Imagem salva com sucesso na raiz do projeto:", file.filename);
-      let fileName = file.filename.split(".");
-      let imageName = fileName[0] + ".png";
-      import_fs.default.unlink(fileToUpload, function(err) {
-        if (err)
-          throw err;
-        console.log("File deleted!");
-      });
-      const oldFilePath = (0, import_path.resolve)(__dirname, ".", "..", `download/${file.filename}`);
-      const newFilePath = (0, import_path.resolve)(__dirname, ".", "..", `download/${imageName}`);
-      import_fs.default.renameSync(oldFilePath, newFilePath);
-      const res = {
-        status: 0,
-        error: null,
-        path: "http://192.81.213.228:8888/files/" + imageName
-      };
-      return response.status(200).json(res);
-    } else {
-      const res = {
-        status: 2,
+      const res2 = {
+        status: 3,
         error: "Image n\xE3o foi carregada.",
         path: null
       };
@@ -149,8 +116,38 @@ var RemoverBGController = class {
           throw err;
         console.log("File deleted!");
       });
-      return response.status(400).json(res);
+      await page.close();
+      return response.status(400).json(res2);
     }
+    console.log("pagina j\xE1 carregou");
+    const imgSrc = await page.evaluate((selector) => {
+      const imgElement = document.querySelector(selector);
+      console.log("Imagem selecionada");
+      console.log(imgElement);
+      return imgElement?.src;
+    }, imgSelector);
+    const imgBuffer = Buffer.from(imgSrc.split(",")[1], "base64");
+    import_fs.default.writeFileSync((0, import_path.resolve)(__dirname, "..", `download/${file.filename}`), imgBuffer);
+    await page.waitForTimeout(2e3);
+    browser.close();
+    console.log("Imagem salva com sucesso na raiz do projeto:", file.filename);
+    let fileName = file.filename.split(".");
+    let imageName = fileName[0] + ".png";
+    import_fs.default.unlink(fileToUpload, function(err) {
+      if (err)
+        throw err;
+      console.log("File deleted!");
+    });
+    const oldFilePath = (0, import_path.resolve)(__dirname, ".", "..", `download/${file.filename}`);
+    const newFilePath = (0, import_path.resolve)(__dirname, ".", "..", `download/${imageName}`);
+    import_fs.default.renameSync(oldFilePath, newFilePath);
+    const res = {
+      status: 0,
+      error: null,
+      path: "http://192.81.213.228:8888/files/" + imageName
+    };
+    await page.close();
+    return response.status(200).json(res);
   }
 };
 var RemoverBGController_default = new RemoverBGController();

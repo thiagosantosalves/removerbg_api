@@ -52,10 +52,8 @@ class RemoverBGController {
             return response.status(400).json(res);
         }
 
-        
         const browser: any = await puppeteer.launch({ 
             headless: true,
-            //headless: "new",
             //headless: false,
             args: [
                 "--disable-setuid-sandbox",
@@ -82,16 +80,29 @@ class RemoverBGController {
         let fileToUpload = resolve(__dirname, '..', 'upload/'+file.filename);
         inputUploadHandle.uploadFile(fileToUpload);
     
-        console.log('clicou pra carregar a imagem')
+        console.log('clicou pra carregar a imagem');
     
         const imgSelector = 'img._VGRaJ';
         
         try {
             await page.waitForSelector(imgSelector);
         } catch (error) {
-            console.log('Error ao carregar a imagem');
+            
+            const res = {
+                status: 3,
+                error: "Image não foi carregada.",
+                path: null
+            }
+
+            fs.unlink(resolve(__dirname, '.', '..', 'upload/'+file.filename), function (err) {
+                if(err) throw err;
+                console.log('File deleted!');
+            });
+
+            await page.close();
+
+            return response.status(400).json(res);
         }
-       
 
         console.log('pagina já carregou');
 
@@ -103,52 +114,38 @@ class RemoverBGController {
             return imgElement?.src;
         }, imgSelector);
 
-        if(imgSrc) {
-
-            const imgBuffer = Buffer.from(imgSrc.split(',')[1], 'base64');
-     
-            fs.writeFileSync(resolve(__dirname, '..', `download/${file.filename}`), imgBuffer);
+        const imgBuffer = Buffer.from(imgSrc.split(',')[1], 'base64');
     
-            await page.waitForTimeout(2000);
-        
-            browser.close();
+        fs.writeFileSync(resolve(__dirname, '..', `download/${file.filename}`), imgBuffer);
+
+        await page.waitForTimeout(2000);
     
-            console.log('Imagem salva com sucesso na raiz do projeto:', file.filename);
-                
-            let fileName: string[] = file.filename.split('.');
-            let imageName: string = fileName[0]+'.png';
-    
-            fs.unlink(fileToUpload, function (err) {
-                if(err) throw err;
-                console.log('File deleted!');
-            });
+        browser.close();
 
-            const oldFilePath: string = resolve(__dirname, '.', '..', `download/${file.filename}`);
-            const newFilePath: string = resolve(__dirname, '.', '..', `download/${imageName}`);
+        console.log('Imagem salva com sucesso na raiz do projeto:', file.filename);
+            
+        let fileName: string[] = file.filename.split('.');
+        let imageName: string = fileName[0]+'.png';
 
-            fs.renameSync(oldFilePath, newFilePath);
+        fs.unlink(fileToUpload, function (err) {
+            if(err) throw err;
+            console.log('File deleted!');
+        });
 
-            const res = {
-                status: 0,
-                error: null,
-                path: "http://192.81.213.228:8888/files/"+imageName
-            }
+        const oldFilePath: string = resolve(__dirname, '.', '..', `download/${file.filename}`);
+        const newFilePath: string = resolve(__dirname, '.', '..', `download/${imageName}`);
 
-            return response.status(200).json(res);
-        } else {
-            const res = {
-                status: 2,
-                error: "Image não foi carregada.",
-                path: null
-            }
+        fs.renameSync(oldFilePath, newFilePath);
 
-            fs.unlink(resolve(__dirname, '.', '..', 'upload/'+file.filename), function (err) {
-                if(err) throw err;
-                console.log('File deleted!');
-            });
-
-            return response.status(400).json(res);
+        const res = {
+            status: 0,
+            error: null,
+            path: "http://192.81.213.228:8888/files/"+imageName
         }
+
+        await page.close();
+        
+        return response.status(200).json(res);
     }
 }
 
