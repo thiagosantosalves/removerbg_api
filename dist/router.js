@@ -116,7 +116,7 @@ var RemoverBGController = class {
           throw err;
         console.log("File deleted!");
       });
-      await page.close();
+      await browser.close();
       return response.status(400).json(res2);
     }
     console.log("pagina j\xE1 carregou");
@@ -146,7 +146,6 @@ var RemoverBGController = class {
       error: null,
       path: "http://192.81.213.228:8888/files/" + imageName
     };
-    await page.close();
     return response.status(200).json(res);
   }
 };
