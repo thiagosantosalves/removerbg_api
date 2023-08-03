@@ -104,7 +104,7 @@ var RemoverBGController = class {
       const imgElement = document.querySelector(selector);
       console.log("Imagem selecionada");
       console.log(imgElement);
-      return imgElement?.src;
+      return imgElement.src;
     }, imgSelector);
     if (imgSrc) {
       const imgBuffer = Buffer.from(imgSrc.split(",")[1], "base64");
