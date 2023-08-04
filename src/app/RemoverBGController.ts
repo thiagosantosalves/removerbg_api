@@ -52,98 +52,117 @@ class RemoverBGController {
             return response.status(400).json(res);
         }
 
-        const browser: any = await puppeteer.launch({ 
-            headless: true,
-            //headless: false,
-            args: [
-                "--disable-setuid-sandbox",
-                "--no-sandbox",
-                "--single-process",
-                "--no-zygote",
-            ]   
-        });
-    
-        const page = await browser.newPage();
-        await page.goto('https://br.depositphotos.com/bgremover/upload.html', { waitUntil: 'domcontentloaded' });
-    
-        await page.waitForTimeout(1000);
-    
-        await page.evaluate(() => {
-            const buttons = Array.from(document.querySelectorAll('button'));
-            const enviarImagemButton: any = buttons.find(button => button.innerText.includes('Fazer upload de arquivo'));
-            enviarImagemButton.click();
-        });
-    
-        await page.waitForTimeout(2000);
-    
-        const inputUploadHandle: any = await page.$('input[type=file]');
-        let fileToUpload = resolve(__dirname, '..', 'upload/'+file.filename);
-        inputUploadHandle.uploadFile(fileToUpload);
-    
-        console.log('clicou pra carregar a imagem');
-    
-        const imgSelector = 'img._VGRaJ';
-        
         try {
-            await page.waitForSelector(imgSelector);
-        } catch (error) {
-            
-            const res = {
-                status: 3,
-                error: "Image não foi carregada.",
-                path: null
-            }
 
-            fs.unlink(resolve(__dirname, '.', '..', 'upload/'+file.filename), function (err) {
+            const browser: any = await puppeteer.launch({ 
+                headless: true,
+                //headless: false,
+                args: [
+                    "--disable-setuid-sandbox",
+                    "--no-sandbox",
+                    "--single-process",
+                    "--no-zygote",
+                ]   
+            });
+        
+            const page = await browser.newPage();
+            await page.goto('https://br.depositphotos.com/bgremover/upload.html', { waitUntil: 'domcontentloaded' });
+        
+            await page.waitForTimeout(1000);
+        
+            await page.evaluate(() => {
+                const buttons = Array.from(document.querySelectorAll('button'));
+                const enviarImagemButton: any = buttons.find(button => button.innerText.includes('Fazer upload de arquivo'));
+                enviarImagemButton.click();
+            });
+        
+            await page.waitForTimeout(2000);
+        
+            const inputUploadHandle: any = await page.$('input[type=file]');
+            let fileToUpload = resolve(__dirname, '..', 'upload/'+file.filename);
+            inputUploadHandle.uploadFile(fileToUpload);
+        
+            console.log('clicou pra carregar a imagem');
+        
+            const imgSelector = 'img._VGRaJ';
+            
+            try {
+                await page.waitForSelector(imgSelector);
+            } catch (error) {
+                
+                const res = {
+                    status: 3,
+                    error: "Image não foi carregada.",
+                    path: null
+                }
+    
+                fs.unlink(resolve(__dirname, '.', '..', 'upload/'+file.filename), function (err) {
+                    if(err) throw err;
+                    console.log('File deleted! ');
+                });
+    
+                await browser.close();
+                return response.status(400).json(res);
+            }
+    
+            console.log('pagina já carregou');
+    
+            const imgSrc = await page.evaluate((selector: any) => {
+                const imgElement = document.querySelector(selector);
+                console.log('Imagem selecionada');
+                console.log(imgElement)
+    
+                return imgElement?.src;
+            }, imgSelector);
+    
+            const imgBuffer = Buffer.from(imgSrc.split(',')[1], 'base64');
+        
+            fs.writeFileSync(resolve(__dirname, '..', `download/${file.filename}`), imgBuffer);
+    
+            await page.waitForTimeout(2000);
+        
+            browser.close();
+    
+            console.log('Imagem salva com sucesso na raiz do projeto:', file.filename);
+                
+            let fileName: string[] = file.filename.split('.');
+            let imageName: string = fileName[0]+'.png';
+    
+            fs.unlink(fileToUpload, function (err) {
                 if(err) throw err;
                 console.log('File deleted!');
             });
-
-            await browser.close();
-
-            return response.status(400).json(res);
-        }
-
-        console.log('pagina já carregou');
-
-        const imgSrc = await page.evaluate((selector: any) => {
-            const imgElement = document.querySelector(selector);
-            console.log('Imagem selecionada');
-            console.log(imgElement)
-
-            return imgElement?.src;
-        }, imgSelector);
-
-        const imgBuffer = Buffer.from(imgSrc.split(',')[1], 'base64');
     
-        fs.writeFileSync(resolve(__dirname, '..', `download/${file.filename}`), imgBuffer);
-
-        await page.waitForTimeout(2000);
+            const oldFilePath: string = resolve(__dirname, '.', '..', `download/${file.filename}`);
+            const newFilePath: string = resolve(__dirname, '.', '..', `download/${imageName}`);
     
-        browser.close();
-
-        console.log('Imagem salva com sucesso na raiz do projeto:', file.filename);
+            fs.renameSync(oldFilePath, newFilePath);
+    
+            const res = {
+                status: 0,
+                error: null,
+                path: "http://192.81.213.228:8888/files/"+imageName
+            }
             
-        let fileName: string[] = file.filename.split('.');
-        let imageName: string = fileName[0]+'.png';
+            return response.status(200).json(res);
 
-        fs.unlink(fileToUpload, function (err) {
-            if(err) throw err;
-            console.log('File deleted!');
-        });
+        } catch (error) {
+            // Tratar erro caso algo dê errado no Puppeteer ou na requisição
+            console.error('Erro durante a execução do Puppeteer:', error);
 
-        const oldFilePath: string = resolve(__dirname, '.', '..', `download/${file.filename}`);
-        const newFilePath: string = resolve(__dirname, '.', '..', `download/${imageName}`);
+            const res = {
+                status: 4,
+                error: "Erro durante a execução do Puppeteer.",
+                path: null
+            }
 
-        fs.renameSync(oldFilePath, newFilePath);
+            fs.unlink(resolve(__dirname, '.', '..', 'upload/' + file.filename), function (err) {
+                if (err) throw err;
+                console.log('File deleted! ');
+            });
 
-        const res = {
-            status: 0,
-            error: null,
-            path: "http://192.81.213.228:8888/files/"+imageName
+            return response.status(500).json(res);
         }
-        
-        return response.status(200).json(res);
     }
 }
 
