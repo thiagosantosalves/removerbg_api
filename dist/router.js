@@ -185,8 +185,8 @@ var multer_default = {
 var router = (0, import_express.Router)();
 var upload = (0, import_multer2.default)(multer_default);
 router.post("/", upload.single("file"), RemoverBGController_default.store);
-router.post("/teste", (request, Response2) => {
+router.post("/teste", (request, response2) => {
   const res = request.body;
-  return import_express.response.status(200).json(res);
+  return response2.status(200).json(res);
 });
 var router_default = router;
