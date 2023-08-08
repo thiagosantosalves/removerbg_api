@@ -10,5 +10,8 @@ const upload = multer(multerConfig);
 
 router.post('/', upload.single('file'), RemoverBGController.store); 
 
+router.post('/teste', (request, response) => {
+    return response.status(200).json({ msn: 'Deu certo caralho!' })
+}); 
 
 export default router;

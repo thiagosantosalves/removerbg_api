@@ -9,21 +9,18 @@ import ControllerCron from './app/ControllerCron';
 const app = express();
 
 app.use(express.json());
-
-/*
-necessary to configure which sites can access the api
 app.use(cors); 
-*/
 
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     next();
-});
+}); */
 
 app.use(router);
 app.use('/files', express.static(path.resolve(__dirname, '..', 'download')));
-
 app.use(router);
+
+
 
 ControllerCron.fileDelete();
 
