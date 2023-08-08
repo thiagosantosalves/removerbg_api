@@ -35,7 +35,7 @@ var import_puppeteer = __toESM(require("puppeteer"));
 var import_fs = __toESM(require("fs"));
 var import_path = require("path");
 var RemoverBGController = class {
-  async store(request, response) {
+  async store(request, response2) {
     const file = request.file;
     if (file !== null && file !== void 0) {
       if (file.size > 9815779) {
@@ -49,7 +49,7 @@ var RemoverBGController = class {
             throw err;
           console.log("File deleted!");
         });
-        return response.status(400).json(res);
+        return response2.status(400).json(res);
       }
       let type = file.mimetype.split("/");
       if (type[0] != "image") {
@@ -63,7 +63,7 @@ var RemoverBGController = class {
             throw err;
           console.log("File deleted!");
         });
-        return response.status(400).json(res);
+        return response2.status(400).json(res);
       }
     } else {
       const res = {
@@ -71,7 +71,7 @@ var RemoverBGController = class {
         error: "O objeto file \xE9 nulo ou indefinido.",
         path: null
       };
-      return response.status(400).json(res);
+      return response2.status(400).json(res);
     }
     try {
       const browser = await import_puppeteer.default.launch({
@@ -112,7 +112,7 @@ var RemoverBGController = class {
           console.log("File deleted! ");
         });
         await browser.close();
-        return response.status(400).json(res2);
+        return response2.status(400).json(res2);
       }
       console.log("pagina j\xE1 carregou");
       const imgSrc = await page.evaluate((selector) => {
@@ -141,7 +141,7 @@ var RemoverBGController = class {
         error: null,
         path: "http://192.81.213.228:8888/files/" + imageName
       };
-      return response.status(200).json(res);
+      return response2.status(200).json(res);
     } catch (error) {
       console.error("Erro durante a execu\xE7\xE3o do Puppeteer:", error);
       const res = {
@@ -154,7 +154,7 @@ var RemoverBGController = class {
           throw err;
         console.log("File deleted! ");
       });
-      return response.status(500).json(res);
+      return response2.status(500).json(res);
     }
   }
 };
@@ -179,6 +179,9 @@ var multer_default = {
 var router = (0, import_express.Router)();
 var upload = (0, import_multer2.default)(multer_default);
 router.post("/", upload.single("file"), RemoverBGController_default.store);
+router.post("/teste", (request, Response2) => {
+  return import_express.response.status(200).json({ msn: "deu certo!" });
+});
 var router_default = router;
 
 // src/app/ControllerCron.ts
