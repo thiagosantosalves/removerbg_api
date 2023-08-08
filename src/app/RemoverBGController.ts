@@ -59,6 +59,7 @@ class RemoverBGController {
                 //headless: false,
                 args: [
                     "--disable-setuid-sandbox",
+                    "--disable-web-security",
                     "--no-sandbox",
                     "--single-process",
                     "--no-zygote",
