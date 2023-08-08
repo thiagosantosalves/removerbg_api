@@ -24,6 +24,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 
 // src/server.ts
 var import_express2 = __toESM(require("express"));
+var import_cors = __toESM(require("cors"));
 var import_path4 = __toESM(require("path"));
 
 // src/router.ts
@@ -179,6 +180,9 @@ var multer_default = {
 var router = (0, import_express.Router)();
 var upload = (0, import_multer2.default)(multer_default);
 router.post("/", upload.single("file"), RemoverBGController_default.store);
+router.post("/teste", (request, response) => {
+  return response.status(200).json({ msn: "Deu certo caralho!" });
+});
 var router_default = router;
 
 // src/app/ControllerCron.ts
@@ -223,14 +227,7 @@ var ControllerCron_default = new ControllerCron();
 require("dotenv").config();
 var app = (0, import_express2.default)();
 app.use(import_express2.default.json());
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+app.use(import_cors.default);
 app.use(router_default);
 app.use("/files", import_express2.default.static(import_path4.default.resolve(__dirname, "..", "download")));
 app.use(router_default);
