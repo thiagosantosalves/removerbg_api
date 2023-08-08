@@ -12,7 +12,9 @@ router.post('/', upload.single('file'), RemoverBGController.store);
 
 router.post('/teste', (request, Response) => {
 
-    return response.status(200).json({msn: 'deu certo!'})
+    const res = request.body;
+
+    return response.status(200).json(res)
 }); 
 
 export default router;
