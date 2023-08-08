@@ -24,6 +24,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 
 // src/server.ts
 var import_express2 = __toESM(require("express"));
+var import_cors = __toESM(require("cors"));
 var import_path4 = __toESM(require("path"));
 
 // src/router.ts
@@ -227,6 +228,7 @@ var ControllerCron_default = new ControllerCron();
 require("dotenv").config();
 var app = (0, import_express2.default)();
 app.use(import_express2.default.json());
+app.use((0, import_cors.default)());
 app.use(router_default);
 app.use("/files", import_express2.default.static(import_path4.default.resolve(__dirname, "..", "download")));
 app.use(router_default);
