@@ -10,11 +10,4 @@ const upload = multer(multerConfig);
 
 router.post('/', upload.single('file'), RemoverBGController.store); 
 
-router.post('/teste', (request, response) => {
-
-    const res = request.body;
-
-    return response.status(200).json(res)
-}); 
-
 export default router;
