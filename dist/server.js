@@ -223,6 +223,14 @@ var ControllerCron_default = new ControllerCron();
 require("dotenv").config();
 var app = (0, import_express2.default)();
 app.use(import_express2.default.json());
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 app.use(router_default);
 app.use("/files", import_express2.default.static(import_path4.default.resolve(__dirname, "..", "download")));
 app.use(router_default);
