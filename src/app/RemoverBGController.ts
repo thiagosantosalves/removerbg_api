@@ -88,6 +88,48 @@ class RemoverBGController {
             
             try {
                 await page.waitForSelector(imgSelector);
+
+                console.log('pagina já carregou');
+    
+                const imgSrc = await page.evaluate((selector: any) => {
+                    const imgElement = document.querySelector(selector);
+                    console.log('Imagem selecionada');
+                    console.log(imgElement)
+        
+                    return imgElement?.src;
+                }, imgSelector);
+        
+                const imgBuffer = Buffer.from(imgSrc.split(',')[1], 'base64');
+            
+                fs.writeFileSync(resolve(__dirname, '..', `download/${file.filename}`), imgBuffer);
+        
+                await page.waitForTimeout(2000);
+            
+                browser.close();
+        
+                console.log('Imagem salva com sucesso na raiz do projeto:', file.filename);
+                    
+                let fileName: string[] = file.filename.split('.');
+                let imageName: string = fileName[0]+'.png';
+        
+                fs.unlink(fileToUpload, function (err) {
+                    if(err) throw err;
+                    console.log('File deleted!');
+                });
+        
+                const oldFilePath: string = resolve(__dirname, '.', '..', `download/${file.filename}`);
+                const newFilePath: string = resolve(__dirname, '.', '..', `download/${imageName}`);
+        
+                fs.renameSync(oldFilePath, newFilePath);
+        
+                const res = {
+                    status: 0,
+                    error: null,
+                    path: "http://192.81.213.228:8888/files/"+imageName
+                }
+                
+                return response.status(200).json(res);
+                
             } catch (error) {
                 
                 const res = {
@@ -104,47 +146,6 @@ class RemoverBGController {
                 await browser.close();
                 return response.status(400).json(res);
             }
-    
-            console.log('pagina já carregou');
-    
-            const imgSrc = await page.evaluate((selector: any) => {
-                const imgElement = document.querySelector(selector);
-                console.log('Imagem selecionada');
-                console.log(imgElement)
-    
-                return imgElement?.src;
-            }, imgSelector);
-    
-            const imgBuffer = Buffer.from(imgSrc.split(',')[1], 'base64');
-        
-            fs.writeFileSync(resolve(__dirname, '..', `download/${file.filename}`), imgBuffer);
-    
-            await page.waitForTimeout(2000);
-        
-            browser.close();
-    
-            console.log('Imagem salva com sucesso na raiz do projeto:', file.filename);
-                
-            let fileName: string[] = file.filename.split('.');
-            let imageName: string = fileName[0]+'.png';
-    
-            fs.unlink(fileToUpload, function (err) {
-                if(err) throw err;
-                console.log('File deleted!');
-            });
-    
-            const oldFilePath: string = resolve(__dirname, '.', '..', `download/${file.filename}`);
-            const newFilePath: string = resolve(__dirname, '.', '..', `download/${imageName}`);
-    
-            fs.renameSync(oldFilePath, newFilePath);
-    
-            const res = {
-                status: 0,
-                error: null,
-                path: "http://192.81.213.228:8888/files/"+imageName
-            }
-            
-            return response.status(200).json(res);
 
         } catch (error) {
             // Tratar erro caso algo dê errado no Puppeteer ou na requisição
