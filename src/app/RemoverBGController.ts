@@ -166,4 +166,4 @@ class RemoverBGController {
     }
 }
 
-export default new RemoverBGController();
+export default new RemoverBGController(); 
